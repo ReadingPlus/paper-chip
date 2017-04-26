@@ -99,9 +99,9 @@ to let users enter a list of topics or names.
 		 */
 		remove: function(itemIndex) {
 			// Needs to use Polymer splice to trigger data binding
+			var item = this.items[itemIndex];
 			this.splice('items', itemIndex, 1);
-
-			this.fire('delete-item');
+			this.fire('delete-item', {item: item});
 		},
 
 		/**
