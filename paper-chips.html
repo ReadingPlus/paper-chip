@@ -31,15 +31,22 @@ to let users enter a list of topics or names.
 				--iron-icon-height: 20px;
 				--iron-icon-width: 20px;
 				color: var(--disabled-text-color);
+				margin-top: -3px;
+				padding-right: 3px;
+				padding-left: 1px;
 			}
-
-			.chip:hover .delete {
+			.locked .delete { margin-top: -4px;}
+			.selectable .delete:hover {
+				cursor: pointer;
 				color: white;
 			}
+			/* .locked .delete:active {
+				color: #cb32d0;
+			} */
 		</style>
 
 		<template is="dom-repeat" items="[[items]]">
-			<paper-chip class="chip" selectable>[[item.name]] <iron-icon icon="paper-chip:[[_getIcon(item)]]" class="delete" on-tap="_delete"></iron-icon></paper-chip>
+			<paper-chip class$="chip {{_getEnabled(item)}}" selectable>[[item.name]] <iron-icon icon="paper-chip:[[_getIcon(item)]]" class="delete" on-tap="_delete"></iron-icon></paper-chip>
 		</template>
 	</template>
 
@@ -141,6 +148,9 @@ to let users enter a list of topics or names.
 
 		_getIcon: function(item) {
 			return item.fixed ? 'lock' : 'cancel';
+		},
+		_getEnabled: function(item)  {
+			return item.fixed ? 'locked' : 'selectable';
 		}
 	});
 
