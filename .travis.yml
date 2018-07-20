@@ -9,15 +9,15 @@ addons:
 cache:
   directories:
   - node_modules
-  - $HOME/.cache/bower
+  - "$HOME/.cache/bower"
 before_install:
 - if [ -d node_modules ] && [ x$(cat node_modules/.last-node-version 2>/dev/null)
   != x$(node -e 'console.log(process.version)') ]; then npm rebuild && node -e 'console.log(process.version)'
   > node_modules/.last-node-version; fi
 before_script:
 - npm install web-component-tester bower@1.7.9 polylint
-- $(npm bin)/bower install
-- $(npm bin)/polylint --no-recursion
+- "$(npm bin)/bower install"
+- "$(npm bin)/polylint --no-recursion"
 script:
 - xvfb-run $(npm bin)/wct
 after_success: '[ ${TRAVIS_PULL_REQUEST} = "false" ] && [ ${TRAVIS_BRANCH} = "master"
@@ -25,6 +25,6 @@ after_success: '[ ${TRAVIS_PULL_REQUEST} = "false" ] && [ ${TRAVIS_BRANCH} = "ma
   && bower_components/collaborne-build-tools/gpages_build.sh Collaborne info@collaborne.com'
 notifications:
   slack:
-    secure: dB+kzc2+CCKxO1Sp+WLuyVxzafG68OBVp8ismFQv5EK64G383GTKr+toEAemwusoxWqPQD0Ty7RY8tldr6q2p8YzfEushRuW/UQu+wgwprUnDAVnpsdh5qbhNg3CNuhALRbb4G/p6GEwuZQWw1Byf7+/CMiOXJxZHmnuvqhoeojggxDEcdgcA6pSy1GFpFNuPlLhY7I4C94Sd6as3aP2Co3I0F7CwggzhxOHrkLo4EIW5kGDg60b+n+coysWDptHSK6Eka591a1QaZ4PcRJ5kIQ9M36LgjTTpg4agDzLbEcPR8kfCcYv+f65cBnkkRt+Rw8CwidQfmPb12YEHkF40t7CHkGivAmyqPeWXddtlnFXXEnVyfLkM4dDeeojKOW2TzwSupxSiDOvYdVZg6G47Trxo0lYmGC2LK8EONle+hpA1aHq032LHVQgAVi9wQY45iTqUld5WU3eNxjDGlYm/q6xRbjFlZBJyLUZaNNoWmuEOY8FR9Xc5me03zXQvGzL+UAH1aFI0z1Ds9qdWHLwotSD4KlDG5chYVuTtIHSo1BydbJ9EPRSEC4BG7Dx/IlTrLqpRTYQ05ge/onJClZ2z71ctbwfekYJMt1Q9yfCz2luFHlJFdc0T1oni3MKAkd5taM3uQZ+V1Z5gof53n3hleYOAPqyX0hArxoydXrDC8o=
+    secure: EkUJENk5OEEXSgxy+xLDHrThp9p8bhaksg0ZGAZHw2DOKN7VNpzECeIpg2OkA8CCN12PWqb68WUlzf17tafMvy724+BHi/aUeXzD75tZriUL6TVRh9KNg7J1yUY0mO+BHfuL66MbxuilE4/EYqNvRA5obxKyo/hJFyAHmb8J0o2NEGAKfID/k0Ch/7AmY50jYVJo3OdfzLaMv+oKSU5Kn8UvGRZaJdEB6TGqtvQNsgEW2Mbm0ePHarQYYdfU0QmpGUfbL3QxEO2AURl5rYArVo0WhBI+UUlnMcKjyyQ2N/m4C3UMmdhWT8M7NbJ/uDcmMX57r9avINOjz6efmiZTTujHitAdq/5moQxZNpefZOdVjK8xZ1h6Lrx4VJm5Va0AcHUkABbNi9ADM3fR4CZxU4KslRe65hR+Y6gYZaz2VIe3zsMKiO9SUv+eHdrEjtJLoYfTKM7tOOQzo/W3cV2esswYxm2+vdDQwOhUNG1RdAyTS987gC75nvE+nFFqC65Tv5CgpDucRJyhzKWcMJhYXOVD2zA5tCI9zPQgcrAwszK8EovCYG5t/jv70zhdo0ymHkuHIshZtagO+rmZQv/HNF2vf7f5SVQ85Gb+eJpVWRiAyKWaW1qpiPWCZ1qAAvqg9YUKnhW/QtiKyVW8eP/jiIwKXNK7kI1hUTjavbZ6Tkg=
 after_failure:
 - after_failure
