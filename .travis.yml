@@ -1,30 +1,24 @@
-dist: trusty
-sudo: false
-group: beta
 language: node_js
-node_js:
-- node
+sudo: required
+dist: trusty
+node_js: v9.11.1
 addons:
-  firefox: 49.0.2
+  sauce_connect: true
 cache:
   directories:
   - node_modules
-  - "$HOME/.cache/bower"
 before_install:
-- if [ -d node_modules ] && [ x$(cat node_modules/.last-node-version 2>/dev/null)
-  != x$(node -e 'console.log(process.version)') ]; then npm rebuild && node -e 'console.log(process.version)'
-  > node_modules/.last-node-version; fi
-before_script:
-- npm install web-component-tester bower@1.7.9 polylint
-- "$(npm bin)/bower install"
-- "$(npm bin)/polylint --no-recursion"
+- echo -e "machine github.com\n  login $GH_TOKEN" >> ~/.netrc
+- "export DEPLOYMENT_TAG=$TRAVIS_BRANCH\nif [ $TRAVIS_TAG ] \n  then\n    export DEPLOYMENT_TAG=$TRAVIS_TAG\nfi"
 script:
-- xvfb-run $(npm bin)/wct
-after_success: '[ ${TRAVIS_PULL_REQUEST} = "false" ] && [ ${TRAVIS_BRANCH} = "master"
-  ] && $(npm bin)/bower install -s https://${GH_TOKEN}@github.com/Collaborne/collaborne-build-tools.git
-  && bower_components/collaborne-build-tools/gpages_build.sh Collaborne info@collaborne.com'
+- xvfb-run npm run test.sauce
+after_success:
+- build-element
+- npm run check.upstream
+after_failure: cat ./sauce_connect.log
 notifications:
   slack:
-    secure: EkUJENk5OEEXSgxy+xLDHrThp9p8bhaksg0ZGAZHw2DOKN7VNpzECeIpg2OkA8CCN12PWqb68WUlzf17tafMvy724+BHi/aUeXzD75tZriUL6TVRh9KNg7J1yUY0mO+BHfuL66MbxuilE4/EYqNvRA5obxKyo/hJFyAHmb8J0o2NEGAKfID/k0Ch/7AmY50jYVJo3OdfzLaMv+oKSU5Kn8UvGRZaJdEB6TGqtvQNsgEW2Mbm0ePHarQYYdfU0QmpGUfbL3QxEO2AURl5rYArVo0WhBI+UUlnMcKjyyQ2N/m4C3UMmdhWT8M7NbJ/uDcmMX57r9avINOjz6efmiZTTujHitAdq/5moQxZNpefZOdVjK8xZ1h6Lrx4VJm5Va0AcHUkABbNi9ADM3fR4CZxU4KslRe65hR+Y6gYZaz2VIe3zsMKiO9SUv+eHdrEjtJLoYfTKM7tOOQzo/W3cV2esswYxm2+vdDQwOhUNG1RdAyTS987gC75nvE+nFFqC65Tv5CgpDucRJyhzKWcMJhYXOVD2zA5tCI9zPQgcrAwszK8EovCYG5t/jv70zhdo0ymHkuHIshZtagO+rmZQv/HNF2vf7f5SVQ85Gb+eJpVWRiAyKWaW1qpiPWCZ1qAAvqg9YUKnhW/QtiKyVW8eP/jiIwKXNK7kI1hUTjavbZ6Tkg=
-after_failure:
-- after_failure
+    secure: TlM6Fcia87J8L/fY04zZQTVZz48f8hVR3UgNFwBETUbXI/iLcylBmqZZbuI1iSLN/HvZrjk8zE4H91ZiNezNgvmH5YU5Y+DSO7LC6Zee9SE3iMTJC5LO1qTunOFziDMUDuic8A9d8xPBX2XjUvJGKd6Tr4b1UMDRTHR4Yn5cIiapYCu6/6g/tchyHfv4VTAhTTnlxC4PjodJDd13oG8n66Yu5mMHsADfpxFEy15ZNl/F5PtjOPJMe3IB/nS/g1nXnmFqsq5FZ+QOZhsHaaQGHBp0a5NbH5sy3lotizTAZe2q+V5LsRqZqFXCoSfqrCW4uCoz155xL0/Ckq3SQej6h8hNsrlnkc0FLdwP/HU3NPaRYQgJ/14Eth7lp6JugN5tWpwNTjT3Xik4O5WzV2EVCWZMgN7Cct3+J2EDMwEs7Rk8JvmOKvEAoJP4FYf7N9IzOJk9iPm2K3mPNsCUSqVV9pyn5Tft+oW9/OKNy27U22woUng5kTHD2myeGNXx146c6XEtIdD/Zgv/f1IgHvCwnpwlc85qVYMb/5u/JZVvDLdIe5QV3h9k9vx9uavs9hrbm/uwCK90n98yoioywQCFIqZDR1dgtT7bvPhltMkNwPhwRSkDV62C6VB0uf7pgsk0oEx4oku9BocQuIiLXITnkU6P02RS9j7y5RAz48RkomU=
+env:
+  global:
+  - secure: mIlsZEXmCvYvo1QzB+Ci2qZTvp45SPpx3yBHzTDClCV+YrmjTUeYTIrt8zvGkVizf2Kzj+f/i/PBACqkAjrWcJPhTx+v98mnmdTlLLYOW9WJv648bIZbiJt4NUkuBmGj4m37Ec/77qMbCJF3lH9SjKt+YbNWHPIxtTJVYyLaqNb9vC8cMIbASGL92jZHPSJL6EkFVX7SSVrIWEwoRNy/2BLPPsI6kPGTpAUNadb3GGEE02WsCi8oWR4FHT2+YlKp/xkPntoHePp2lI/Rps5izODXErDecH5YJIxcsfT49ZR/sdLd1VCt8AtzrO7cUJPvTuVhS3ZC2sQEYaPwQxKWuNnUn7AvYvMpD9HtgTL4HedQhU1xGuOY6cryllcUFIGzZCqC9gM2pAz3h1GRoGS+9aR3HM6p8eJR3pM62W5LdK5MQe215yddx/etubOPJxzq/3u4MJkNYg6EpeNdnQ5LWsvTFVwwL6wYYm9F/x6gfl7A5ZIdVTFZnDLgECuiAwfPlfrQITSDZZ29vVq3V7Fn5MLTNLMYWw9TcsFWPN9QHXNpQfVCOMIGsVtzVHs5Ls4wCch7YUYjOGNuk992jfkHxAo71aRY8XOl99D/8C3iqmCivHSDIIlH1X3m+lJKFNrnjMSFqG8uCJpf1s0BJU+rAs7uRqo78LrCyFUrfYRQ9bY=
